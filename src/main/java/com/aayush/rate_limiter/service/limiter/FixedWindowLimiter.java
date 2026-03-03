@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-//@Component
+@Component
 public class FixedWindowLimiter implements RateLimiter {
 
     @Value("${ratelimiter.fixed.limit}")

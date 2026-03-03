@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-@Primary
 public class TokenBucketLimiter implements RateLimiter {
 
     private final RedisTemplate<String, Object> redisTemplate;
