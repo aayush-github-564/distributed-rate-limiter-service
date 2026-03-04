@@ -168,7 +168,166 @@ Using Lua:
 
 ---
 
-## 📦 Running Locally
+## 🚀 Running the Application
+
+### 🐳 Option 1: Run with Docker (Recommended)
+
+The application can be run using **Docker and Docker Compose**, which starts both the **Rate Limiter service** and **Redis** automatically in isolated containers.
+
+This ensures the project runs **consistently across environments** without requiring Java, Maven, or Redis to be installed locally.
+
+---
+
+## 🧱 Container Architecture
+
+```
+Docker Engine
+│
+├── rate-limiter (Spring Boot API)
+│       └── Port: 8080
+│
+└── redis (Distributed state store)
+        └── Port: 6379
+```
+
+The **Rate Limiter container communicates with Redis through Docker's internal network**.
+
+---
+
+## 🚀 Start the System
+
+From the project root:
+
+```bash
+docker compose up --build
+```
+
+This will:
+
+1. Build the **Rate Limiter Docker image**
+2. Start a **Redis container**
+3. Start the **Rate Limiter API container**
+4. Connect both containers via a Docker network
+
+---
+
+## 🌐 Access the Application
+
+Once containers start successfully, the API is available at:
+
+```
+http://localhost:8080
+```
+
+---
+
+## 🔎 Verify the Service
+
+### Health Check
+
+```
+http://localhost:8080/actuator/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "UP"
+}
+```
+
+---
+
+### Metrics Endpoint
+
+```
+http://localhost:8080/actuator/metrics
+```
+
+Custom rate limiter metrics include:
+
+```
+rate_limiter.total_requests
+rate_limiter.blocked_requests
+```
+
+---
+
+## 🧪 Test the Rate Limiter
+
+Example request:
+
+```bash
+curl -X POST http://localhost:8080/rate-limit/check \
+-H "Content-Type: application/json" \
+-d '{"clientId":"docker-test","endpoint":"/login"}'
+```
+
+Example response:
+
+```json
+{
+  "allowed": true,
+  "remaining": 3,
+  "retryAfterMs": 0
+}
+```
+
+When the limit is exceeded:
+
+```
+HTTP 429 Too Many Requests
+```
+
+---
+
+## 🐋 Running Containers
+
+To view running containers:
+
+```bash
+docker ps
+```
+
+Expected services:
+
+```
+rate-limiter
+redis
+```
+
+---
+
+## 🛑 Stopping the System
+
+To stop all containers:
+
+```bash
+docker compose down
+```
+
+This stops and removes the containers while preserving the project files.
+
+---
+
+## 📦 Deployment Workflow
+
+Typical workflow for this service:
+
+```
+Build Application
+        ↓
+Package Spring Boot JAR
+        ↓
+Build Docker Image
+        ↓
+Run Containers (Redis + API)
+        ↓
+Expose REST API
+```
+
+### 💻 Option 2: Run Locally
 
 ### 1️⃣ Start Redis
 
@@ -249,7 +408,7 @@ This design mirrors systems used in:
 
 ## 🎯 What This Project Demonstrates
 
-- Understanding of distributed systems fundamentals  
+- Distributed systems fundamentals  
 - Concurrency and race condition handling  
 - Atomic scripting with Redis Lua  
 - Clean backend architecture  
